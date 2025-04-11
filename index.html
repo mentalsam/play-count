@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>プレイ回数計算ツール</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 12px;
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.5;
+            touch-action: manipulation;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            font-size: clamp(1.2rem, 4vw, 1.6rem);
+            margin: 0.7rem 0;
+        }
+        .container {
+            background-color: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .instruction {
+            margin: 0.5rem 0;
+            font-size: clamp(0.8rem, 3vw, 0.9rem);
+            color: #555;
+            text-align: center;
+        }
+        .equation-container {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .input-labels {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 6px;
+        }
+        .left-label, .right-label {
+            width: 30%;
+            text-align: center;
+            font-weight: bold;
+            font-size: clamp(0.75rem, 3vw, 0.85rem);
+        }
+        .equation {
+            display: flex;
+            align-items: center;
+            margin: 12px 0;
+            justify-content: center;
+        }
+        .equation-label {
+            width: 20px;
+            font-weight: bold;
+            margin-right: 5px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        input {
+            width: 30%;
+            padding: clamp(8px, 3vw, 14px) clamp(5px, 2vw, 8px);
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            text-align: center;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            -webkit-appearance: none;
+            background-color: #f9f9f9;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+            background-color: #fff;
+        }
+        .left-input {
+            border-left: 4px solid #3498db;
+        }
+        .right-input {
+            border-left: 4px solid #e74c3c;
+        }
+        .operator {
+            font-size: clamp(1.2rem, 4vw, 1.4rem);
+            margin: 0 3px;
+            font-weight: bold;
+            color: #555;
+        }
+        .result-box {
+            background-color: #f0f0f0;
+            padding: clamp(8px, 3vw, 14px) clamp(5px, 2vw, 8px);
+            border-radius: 10px;
+            text-align: center;
+            min-width: 60px;
+            margin-left: 5px;
+            font-weight: bold;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .calc-button {
+            display: block;
+            width: 100%;
+            padding: clamp(12px, 4vw, 16px);
+            margin: 20px 0;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: clamp(1rem, 3.5vw, 1.1rem);
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .calc-button:active {
+            background-color: #3e8e41;
+            transform: translateY(1px);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .result {
+            margin-top: 20px;
+            padding: 16px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .result p {
+            font-size: clamp(0.9rem, 3.5vw, 1.05rem);
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .result span {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: clamp(0.95rem, 3.5vw, 1.1rem);
+        }
+        .result-label {
+            color: #555;
+        }
+        .highlight {
+            color: #e74c3c;
+        }
+        .blue-highlight {
+            color: #3498db;
+        }
+        .green-highlight {
+            color: #27ae60;
+        }
+        .price-section {
+            background-color: #e8f8e8;
+            padding: 16px;
+            border-radius: 10px;
+            margin: 16px 0;
+            border-left: 4px solid #27ae60;
+        }
+        .price-label {
+            font-weight: bold;
+            margin-bottom: 12px;
+            font-size: clamp(0.85rem, 3vw, 0.95rem);
+            color: #2c3e50;
+        }
+        .price-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 5px;
+        }
+        .price-btn {
+            flex: 1;
+            padding: clamp(8px, 3vw, 12px) clamp(3px, 2vw, 5px);
+            border: none;
+            border-radius: 10px;
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            touch-action: manipulation;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 60px;
+        }
+        .price-btn.plus {
+            background-color: #27ae60;
+        }
+        .price-btn.minus {
+            background-color: #e74c3c;
+        }
+        .price-btn:active {
+            transform: translateY(1px);
+            opacity: 0.9;
+        }
+        .price-input-wrapper {
+            flex: 2;
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            padding: 0 10px;
+            margin: 0 5px;
+        }
+        #price-per-play {
+            flex: 1;
+            border: none;
+            background: transparent;
+            box-shadow: none;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            font-weight: bold;
+            color: #27ae60;
+            text-align: right;
+            margin: 0;
+            padding: clamp(8px, 3vw, 12px) 0;
+            width: auto;
+        }
+        .yen {
+            font-weight: bold;
+            color: #27ae60;
+            font-size: clamp(0.95rem, 3.5vw, 1.1rem);
+        }
+        
+        /* 追加ボタンスタイル */
+        .add-btn {
+            display: block;
+            width: 100%;
+            padding: clamp(10px, 3vw, 14px);
+            margin: 10px 0 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .add-btn:active {
+            background-color: #2980b9;
+            transform: translateY(1px);
+        }
+        .add-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        /* データクリアボタン */
+        .clear-btn {
+            display: block;
+            width: 100%;
+            padding: clamp(8px, 3vw, 12px);
+            margin-top: 20px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .clear-btn:active {
+            transform: translateY(1px);
+            opacity: 0.9;
+        }
+        
+        .save-status {
+            text-align: center;
+            font-size: clamp(0.8rem, 3vw, 0.9rem);
+            color: #27ae60;
+            margin-top: 10px;
+            min-height: 20px;
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        /* スマートフォン向け */
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px;
+            }
+            
+            .equation-label {
+                width: 15px;
+                margin-right: 3px;
+                font-size: 0.8rem;
+            }
+            
+            .operator {
+                margin: 0 2px;
+            }
+            
+            .result-box {
+                min-width: 45px;
+            }
+            
+            .price-controls {
+                gap: 3px;
+            }
+        }
+        
+        /* 小さな画面向け */
+        @media (max-width: 360px) {
+            .equation-label {
+                width: 12px;
+                font-size: 0.75rem;
+            }
+            
+            input {
+                width: 28%;
+            }
+            
+            .operator {
+                margin: 0 1px;
+                font-size: 1.1rem;
+            }
+            
+            .result-box {
+                min-width: 40px;
+                font-size: 0.95rem;
+            }
+        }
+        
+        /* タブレット向け */
+        @media (min-width: 768px) {
+            .container {
+                padding: 24px;
+            }
+            
+            .instruction {
+                font-size: 1rem;
+            }
+            
+            .equation {
+                margin: 16px 0;
+            }
+            
+            .price-section {
+                padding: 20px;
+            }
+            
+            .result {
+                padding: 20px;
+            }
+        }
+        
+        /* デスクトップ向け */
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 700px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>プレイ回数計算ツール</h1>
+    <div class="container">
+        <p class="instruction">・<span class="blue-highlight">左側</span>：現在の機内残り枚数 ・<span class="highlight">右側</span>：<strong>機内出庫数</strong></p>
+        
+        <div class="equation-container" id="equationContainer">
+            <div class="input-labels">
+                <div class="left-label">残り枚数</div>
+                <div style="width:20%"></div>
+                <div class="right-label">機内在庫数</div>
+            </div>
+            
+            <div class="equation">
+                <span class="equation-label">①</span>
+                <input type="number" id="num1-1" class="left-input" placeholder="残り枚数を入力" inputmode="numeric"> 
+                <span class="operator">-</span>
+                <input type="number" id="num1-2" class="right-input" placeholder="機内出庫数" inputmode="numeric"> 
+                <span class="operator">=</span>
+                <div class="result-box" id="result1">?</div>
+            </div>
+            
+            <div class="equation">
+                <span class="equation-label">②</span>
+                <input type="number" id="num2-1" class="left-input" placeholder="残り枚数を入力" inputmode="numeric"> 
+                <span class="operator">-</span>
+                <input type="number" id="num2-2" class="right-input" placeholder="機内出庫数" inputmode="numeric"> 
+                <span class="operator">=</span>
+                <div class="result-box" id="result2">?</div>
+            </div>
+            
+            <div class="equation">
+                <span class="equation-label">③</span>
+                <input type="number" id="num3-1" class="left-input" placeholder="残り枚数を入力" inputmode="numeric"> 
+                <span class="operator">-</span>
+                <input type="number" id="num3-2" class="right-input" placeholder="機内出庫数" inputmode="numeric"> 
+                <span class="operator">=</span>
+                <div class="result-box" id="result3">?</div>
+            </div>
+        </div>
+        
+        <button id="addBtn" class="add-btn">項目を追加</button>
+        
+        <div class="price-section">
+            <div class="price-label">1回あたりの料金：</div>
+            <div class="price-controls">
+                <button class="price-btn minus" onclick="adjustPrice(-100)">-100</button>
+                <div class="price-input-wrapper">
+                    <input type="number" id="price-per-play" value="100" inputmode="numeric">
+                    <span class="yen">円</span>
+                </div>
+                <button class="price-btn plus" onclick="adjustPrice(100)">+100</button>
+            </div>
+        </div>
+        
+        <button class="calc-button" onclick="calculate()">計算する</button>
+        
+        <div class="result">
+            <p>
+                <span class="result-label">プレイ回数（合計）:</span> 
+                <span id="total" style="text-align: right;">0 回</span>
+            </p>
+            <p>
+                <span class="result-label">合計料金:</span>
+                <span id="total-price" class="green-highlight">0 円</span>
+            </p>
+            <p>
+                <span class="result-label highlight">機内出庫枚数:</span>
+                <span id="flightTotal" class="highlight">0 枚</span>
+            </p>
+            <p>
+                <span class="result-label blue-highlight">残り枚数:</span>
+                <span id="remaining" class="blue-highlight">0 枚</span>
+            </p>
+        </div>
+        
+        <button class="clear-btn" onclick="clearData()">データをクリア</button>
+        <div class="save-status" id="saveStatus"></div>
+    </div>
+
+    <script>
+        let equationCount = 3; // 初期項目数
+        
+        // フォーカス時に入力欄の内容を選択状態にする
+        document.addEventListener('DOMContentLoaded', function() {
+            setInputListeners();
+            
+            // ページ読み込み時にデータを復元
+            loadData();
+        });
+        
+        function setInputListeners() {
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.select();
+                });
+                
+                input.addEventListener('keyup', function(event) {
+                    if (event.key === 'Enter') {
+                        this.blur();
+                        calculate();
+                    }
+                });
+                
+                // 値が変更されたら自動計算と即時保存
+                input.addEventListener('input', function() {
+                    calculate();
+                    saveData();
+                });
+            });
+        }
+        
+        // 項目追加関数
+        function addEquation() {
+            equationCount++;
+            if (equationCount > 10) { // 最大10項目まで
+                document.getElementById('addBtn').disabled = true;
+                return;
+            }
+            
+            const container = document.getElementById('equationContainer');
+            const newEquation = document.createElement('div');
+            newEquation.className = 'equation';
+            newEquation.innerHTML = `
+                <span class="equation-label">${String.fromCharCode(9311 + equationCount)}</span>
+                <input type="number" id="num${equationCount}-1" class="left-input" placeholder="残り枚数を入力" inputmode="numeric"> 
+                <span class="operator">-</span>
+                <input type="number" id="num${equationCount}-2" class="right-input" placeholder="機内出庫数" inputmode="numeric"> 
+                <span class="operator">=</span>
+                <div class="result-box" id="result${equationCount}">0</div>
+            `;
+            
+            container.appendChild(newEquation);
+            
+            // 新しい入力フィールドにイベントリスナーを追加
+            const inputs = newEquation.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('keyup', function(event) {
+                    if (event.key === 'Enter') {
+                        this.blur();
+                        calculate();
+                    }
+                });
+                input.addEventListener('input', function() {
+                    calculate();
+                    saveData();
+                });
+                input.addEventListener('focus', function() {
+                    this.select();
+                });
+            });
+            
+            // 10項目に達したらボタンを無効化
+            if (equationCount >= 10) {
+                document.getElementById('addBtn').disabled = true;
+            }
+            
+            // 項目追加後に計算を実行して結果を更新
+            calculate();
+            
+            // データを保存
+            saveData();
+        }
+        
+        // 計算関数
+        function calculate() {
+            let playCount = 0;
+            let flightTotal = 0;
+            let leftTotal = 0;
+
+            // 各計算式の処理
+            for (let i = 1; i <= equationCount; i++) {
+                const left = parseFloat(document.getElementById(`num${i}-1`)?.value) || 0;
+                const right = parseFloat(document.getElementById(`num${i}-2`)?.value) || 0;
+                
+                // 左側の値を合計
+                leftTotal += left;
+                
+                // プレイ回数計算（絶対値）
+                const result = Math.abs(left - right);
+                const resultElement = document.getElementById(`result${i}`);
+                if (resultElement) {
+                    resultElement.textContent = result;
+                }
+                playCount += result;
+                
+                // 機内枚数合計（右側の数値）
+                flightTotal += right;
+            }
+            
+            // 料金計算
+            const pricePerPlay = parseFloat(document.getElementById('price-per-play').value) || 100;
+            const totalPrice = playCount * pricePerPlay;
+            
+            // 結果表示
+            document.getElementById('total').textContent = playCount + " 回";
+            document.getElementById('total-price').textContent = totalPrice.toLocaleString() + " 円";
+            document.getElementById('flightTotal').textContent = flightTotal + " 枚";
+            document.getElementById('remaining').textContent = leftTotal + " 枚";
+        }
+
+        // 料金調整関数
+        function adjustPrice(amount) {
+            const priceInput = document.getElementById('price-per-play');
+            let currentPrice = parseInt(priceInput.value) || 0;
+            currentPrice += amount;
+            
+            // 0円未満にならないように
+            if (currentPrice < 0) currentPrice = 0;
+            
+            priceInput.value = currentPrice;
+            
+            // 金額変更後に再計算と保存
+            calculate();
+            saveData();
+        }
+        
+        // データ保存関数
+        function saveData() {
+            // 保存するデータを収集
+            const data = {
+                equationCount: equationCount,
+                pricePerPlay: document.getElementById('price-per-play').value,
+                equations: []
+            };
+            
+            // 各計算式のデータを保存
+            for (let i = 1; i <= equationCount; i++) {
+                const left = document.getElementById(`num${i}-1`)?.value || '';
+                const right = document.getElementById(`num${i}-2`)?.value || '';
+                
+                data.equations.push({
+                    left: left,
+                    right: right
+                });
+            }
+            
+            // ローカルストレージに保存
+            try {
+                localStorage.setItem('playCountCalculatorData', JSON.stringify(data));
+                showSaveStatus('保存しました');
+            } catch (e) {
+                console.error('データの保存に失敗しました:', e);
+                showSaveStatus('保存に失敗しました', true);
+            }
+        }
+        
+        // データ読み込み関数
+        function loadData() {
+            try {
+                const savedData = localStorage.getItem('playCountCalculatorData');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    
+                    // 料金を復元
+                    if (data.pricePerPlay) {
+                        document.getElementById('price-per-play').value = data.pricePerPlay;
+                    }
+                    
+                    // 項目数を復元
+                    if (data.equationCount && data.equationCount > 3) {
+                        // 必要な数の項目を追加
+                        while (equationCount < data.equationCount) {
+                            addEquationWithoutSave();
+                        }
+                    }
+                    
+                    // 各項目の値を復元
+                    if (data.equations && data.equations.length > 0) {
+                        data.equations.forEach((eq, index) => {
+                            const i = index + 1;
+                            if (i <= equationCount) {
+                                const leftInput = document.getElementById(`num${i}-1`);
+                                const rightInput = document.getElementById(`num${i}-2`);
+                                
+                                if (leftInput && eq.left) leftInput.value = eq.left;
+                                if (rightInput && eq.right) rightInput.value = eq.right;
+                            }
+                        });
+                    }
+                    
+                    // 計算を実行
+                    calculate();
+                    showSaveStatus('データを復元しました');
+                }
+            } catch (e) {
+                console.error('データの読み込みに失敗しました:', e);
+                showSaveStatus('データの読み込みに失敗しました', true);
+            }
+        }
+        
+        // 保存せずに項目を追加（データ復元用）
+        function addEquationWithoutSave() {
+            equationCount++;
+            if (equationCount > 10) {
+                document.getElementById('addBtn').disabled = true;
+                return;
+            }
+            
+            const container = document.getElementById('equationContainer');
+            const newEquation = document.createElement('div');
+            newEquation.className = 'equation';
+            newEquation.innerHTML = `
+                <span class="equation-label">${String.fromCharCode(9311 + equationCount)}</span>
+                <input type="number" id="num${equationCount}-1" class="left-input" placeholder="残り枚数を入力" inputmode="numeric"> 
+                <span class="operator">-</span>
+                <input type="number" id="num${equationCount}-2" class="right-input" placeholder="機内出庫数" inputmode="numeric"> 
+                <span class="operator">=</span>
+                <div class="result-box" id="result${equationCount}">0</div>
+            `;
+            
+            container.appendChild(newEquation);
+            
+            // 新しい入力フィールドにイベントリスナーを追加
+            const inputs = newEquation.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('keyup', function(event) {
+                    if (event.key === 'Enter') {
+                        this.blur();
+                        calculate();
+                    }
+                });
+                input.addEventListener('input', function() {
+                    calculate();
+                    saveData();
+                });
+                input.addEventListener('focus', function() {
+                    this.select();
+                });
+            });
+            
+            // 10項目に達したらボタンを無効化
+            if (equationCount >= 10) {
+                document.getElementById('addBtn').disabled = true;
+            }
+        }
+        
+        // データをクリア（確認なし）
+        function clearData() {
+            // 確認ダイアログなしでデータを直接クリア
+            localStorage.removeItem('playCountCalculatorData');
+            
+            // 入力フィールドをクリア
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.value = '';
+            });
+            
+            // 料金を初期値に戻す
+            document.getElementById('price-per-play').value = '100';
+            
+            // 結果をリセット
+            calculate();
+            
+            showSaveStatus('データをクリアしました');
+        }
+        
+        // 保存ステータスを表示
+        function showSaveStatus(message, isError = false) {
+            const statusElement = document.getElementById('saveStatus');
+            statusElement.textContent = message;
+            statusElement.style.color = isError ? '#e74c3c' : '#27ae60';
+            statusElement.style.opacity = 1;
+            
+            // 1秒後にメッセージを消す
+            setTimeout(() => {
+                statusElement.style.opacity = 0;
+            }, 1000);
+        }
+        
+        // モバイルでダブルタップによるズームを防止
+        document.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+        
+        // 追加ボタンにイベントリスナーを設定
+        document.getElementById('addBtn').addEventListener('click', addEquation);
+        
+        // ページ読み込み時に初期計算を実行
+        window.onload = function() {
+            calculate();
+        };
+    </script>
+</body>
+</html>
