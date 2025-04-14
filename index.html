@@ -205,30 +205,32 @@
             opacity: 0.9;
         }
         .price-input-wrapper {
-            flex: 1;
-            position: relative;
-            display: flex;
-            align-items: center;
-            background: white;
-            border-radius: 10px;
-            border: 1px solid #ddd;
-            padding: 0 5px;
-            margin: 0 5px;
-        }
-        #price-per-play {
-            flex: 1;
-            border: none;
-            background: transparent;
-            box-shadow: none;
-            font-size: clamp(1rem, 4vw, 1.2rem);
-            font-weight: bold;
-            color: #27ae60;
-            text-align: right;
-            margin: 0;
-            padding: clamp(8px, 3vw, 12px) 0;
-            width: auto;
-            min-width: 60px;
-        }
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    padding: 0 5px; /* 左右のパディングを減らす */
+    margin: 0 2px; /* マージンを減らす */
+    min-width: 60px; /* 最小幅を設定 */
+}
+
+#price-per-play {
+    flex: 1;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    font-size: clamp(1rem, 4vw, 1.2rem);
+    font-weight: bold;
+    color: #27ae60;
+    text-align: right;
+    margin: 0;
+    padding: clamp(6px, 3vw, 10px) 2px; /* 上下のパディングを減らし、左右も調整 */
+    width: 100%; /* 幅を100%に */
+    min-width: 40px; /* 最小幅をさらに減らす */
+}
         .yen {
             font-weight: bold;
             color: #27ae60;
@@ -322,10 +324,12 @@
             
             .price-input-wrapper {
                 padding: 0 3px;
+                min-width: 50px;
             }
             
             #price-per-play {
-                min-width: 50px;
+                min-width: 30px;
+                padding: clamp(6px, 3vw, 8px) 1px;
             }
         }
         
@@ -357,8 +361,8 @@
             }
             
             #price-per-play {
-                min-width: 45px;
-                padding: clamp(8px, 3vw, 10px) 0;
+                min-width: 25px;
+                padding: clamp(5px, 3vw, 7px) 1px;
             }
         }
         
