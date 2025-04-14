@@ -183,7 +183,7 @@
             padding: clamp(8px, 3vw, 12px) clamp(3px, 2vw, 5px);
             border: none;
             border-radius: 10px;
-            font-size: clamp(0.9rem, 3vw, 1rem);
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
             font-weight: bold;
             color: white;
             cursor: pointer;
@@ -191,7 +191,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 60px;
+            min-width: 50px;
+            max-width: 80px;
         }
         .price-btn.plus {
             background-color: #27ae60;
@@ -310,6 +311,12 @@
             .price-controls {
                 gap: 3px;
             }
+            
+            .price-btn {
+                font-size: 0.75rem;
+                padding: 8px 2px;
+                min-width: 40px;
+            }
         }
         
         /* 小さな画面向け */
@@ -331,6 +338,12 @@
             .result-box {
                 min-width: 40px;
                 font-size: 0.95rem;
+            }
+            
+            .price-btn {
+                font-size: 0.7rem;
+                padding: 8px 1px;
+                min-width: 35px;
             }
         }
         
