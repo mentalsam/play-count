@@ -61,7 +61,6 @@
             align-items: center;
             margin: 12px 0;
             justify-content: center;
-            flex-wrap: wrap; /* Added for better responsiveness */
         }
         .equation-label {
             width: 20px;
@@ -142,7 +141,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap; /* Added for better responsiveness */
         }
         .result span {
             font-weight: bold;
@@ -179,7 +177,6 @@
             align-items: center;
             justify-content: space-between;
             gap: 5px;
-            flex-wrap: wrap; /* Added for better responsiveness */
         }
         .price-btn {
             flex: 1;
@@ -290,41 +287,73 @@
             transition: opacity 0.5s ease-in-out;
         }
         
-        /* 小さな画面向け */
-        @media (max-width: 360px) {
-            .equation-label {
-                font-size: 0.7rem;
+        /* スマートフォン向け */
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px;
             }
             
-            input {
-                font-size: 1rem;
+            .equation-label {
+                width: 15px;
+                margin-right: 3px;
+                font-size: 0.8rem;
+            }
+            
+            .operator {
+                margin: 0 2px;
             }
             
             .result-box {
-                font-size: 1rem;
+                min-width: 45px;
+            }
+            
+            .price-controls {
+                gap: 3px;
+            }
+        }
+        
+        /* 小さな画面向け */
+        @media (max-width: 360px) {
+            .equation-label {
+                width: 12px;
+                font-size: 0.75rem;
+            }
+            
+            input {
+                width: 28%;
+            }
+            
+            .operator {
+                margin: 0 1px;
+                font-size: 1.1rem;
+            }
+            
+            .result-box {
+                min-width: 40px;
+                font-size: 0.95rem;
             }
         }
         
         /* タブレット向け */
         @media (min-width: 768px) {
             .container {
-                padding: 20px;
+                padding: 24px;
             }
             
             .instruction {
-                font-size: 0.9rem;
+                font-size: 1rem;
             }
             
             .equation {
-                margin: 14px 0;
+                margin: 16px 0;
             }
             
             .price-section {
-                padding: 18px;
+                padding: 20px;
             }
             
             .result {
-                padding: 18px;
+                padding: 20px;
             }
         }
         
