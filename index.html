@@ -293,28 +293,28 @@
         /* スマートフォン向け */
         @media (max-width: 480px) {
             .equation {
-                flex-direction: row; /* Stack elements vertically */
-                align-items: center; /* Make items take full width */
+                flex-direction: column; /* Stack elements vertically */
+                align-items: stretch; /* Make items take full width */
             }
             
             .equation-label {
-                width: 20px;
-                text-align: left;
-                margin-bottom: 0px;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 5px;
             }
             
             input {
-                width: 30%;
-                margin: 0 5px;
+                width: 100%;
+                margin: 5px 0;
             }
             
             .operator {
-                display: inline; /* Hide operators */
+                display: none; /* Hide operators */
             }
             
             .result-box {
-                width: auto;
-                margin: 0 5px;
+                width: 100%;
+                margin: 5px 0;
             }
 
             .price-controls {
