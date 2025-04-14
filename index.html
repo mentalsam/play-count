@@ -61,6 +61,7 @@
             align-items: center;
             margin: 12px 0;
             justify-content: center;
+            flex-wrap: wrap; /* Added for better responsiveness */
         }
         .equation-label {
             width: 20px;
@@ -141,6 +142,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap; /* Added for better responsiveness */
         }
         .result span {
             font-weight: bold;
@@ -177,6 +179,7 @@
             align-items: center;
             justify-content: space-between;
             gap: 5px;
+            flex-wrap: wrap; /* Added for better responsiveness */
         }
         .price-btn {
             flex: 1;
@@ -290,70 +293,101 @@
         /* スマートフォン向け */
         @media (max-width: 480px) {
             .container {
-                padding: 12px;
+                padding: 8px;
+            }
+            
+            .instruction {
+                font-size: 0.8rem;
+            }
+
+            .input-labels {
+                font-size: 0.7rem;
+            }
+            
+            .equation {
+                flex-direction: column; /* Stack elements vertically */
+                align-items: stretch; /* Make items take full width */
             }
             
             .equation-label {
-                width: 15px;
-                margin-right: 3px;
-                font-size: 0.8rem;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 5px;
+            }
+            
+            input {
+                width: 100%;
+                margin: 5px 0;
             }
             
             .operator {
-                margin: 0 2px;
+                display: none; /* Hide operators */
             }
             
             .result-box {
-                min-width: 45px;
+                width: 100%;
+                margin: 5px 0;
             }
-            
+
             .price-controls {
-                gap: 3px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .price-btn {
+                margin: 5px 0;
+            }
+
+            .price-input-wrapper {
+                margin: 5px 0;
+            }
+
+            .result p {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .result span {
+                text-align: center;
+                margin-top: 5px;
             }
         }
         
         /* 小さな画面向け */
         @media (max-width: 360px) {
             .equation-label {
-                width: 12px;
-                font-size: 0.75rem;
+                font-size: 0.7rem;
             }
             
             input {
-                width: 28%;
-            }
-            
-            .operator {
-                margin: 0 1px;
-                font-size: 1.1rem;
+                font-size: 1rem;
             }
             
             .result-box {
-                min-width: 40px;
-                font-size: 0.95rem;
+                font-size: 1rem;
             }
         }
         
         /* タブレット向け */
         @media (min-width: 768px) {
             .container {
-                padding: 24px;
+                padding: 20px;
             }
             
             .instruction {
-                font-size: 1rem;
+                font-size: 0.9rem;
             }
             
             .equation {
-                margin: 16px 0;
+                margin: 14px 0;
             }
             
             .price-section {
-                padding: 20px;
+                padding: 18px;
             }
             
             .result {
-                padding: 20px;
+                padding: 18px;
             }
         }
         
@@ -366,7 +400,7 @@
     </style>
 </head>
 <body>
-    <h1>プレイ回数計算ツール</h1>
+    <h1>カード棚卸し計算</h1>
     <div class="container">
         <p class="instruction">・<span class="blue-highlight">左側</span>：現在の機内残り枚数 ・<span class="highlight">右側</span>：<strong>機内出庫数</strong></p>
         
